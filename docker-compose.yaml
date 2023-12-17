@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+
+  go-service:
+    container_name: go-service
+    build:
+      context: .
+      dockerfile: golang/Dockerfile.arm64
+    init: true
+    user: "${UID}:${GID}"
+    networks:
+      - dev-net
+    volumes:
+      - .state/go-service:/project
+    command:
+      sleep infinity
+
+networks:
+  dev-net:
+

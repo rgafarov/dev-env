@@ -1,0 +1,2 @@
+#!/bin/sh
+nvim.appimage --appimage-extract-and-run "$@"

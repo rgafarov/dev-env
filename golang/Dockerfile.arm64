@@ -1,0 +1,11 @@
+FROM dev-base
+
+ENV PATH=${PATH}:/usr/local/go/bin:/root/go/bin
+
+RUN curl -o 'go.linux-arm64.tar.gz' https://dl.google.com/go/go1.21.5.linux-arm64.tar.gz && \
+    tar -C /usr/local -xzf go.linux-arm64.tar.gz && \
+    rm -f go.linux-arm64.tar.gz && \
+    go install golang.org/x/tools/gopls@latest && \
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+
+user dev:dev
