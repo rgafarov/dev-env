@@ -1,18 +1,22 @@
-FROM alpine:3.19
+FROM ubuntu:22.04
 
-# Install dependencies
-RUN apk add --no-cache bash openssh socat && rm -rf /var/cache/apk/*
+ARG UID
+ARG GID
+ARG SOCKET_DIR=/.ssh-agent
 
-# Copy entrypoint script to container
-COPY entry.sh /entry.sh
-RUN chmod a+x /entry.sh
+RUN apt update && apt -y install locales openssh-server socat && locale-gen en_US.UTF-8
 
-# Setup environment variables; export SSH_AUTH_SOCK from socket directory
-ENV SOCKET_DIR /.ssh-agent
+# adding non root user(dev) and prepare dir for ssh socket
+RUN groupadd -f --gid ${GID} dev && useradd --uid ${UID} --gid dev --shell /bin/bash --create-home dev && \
+    mkdir -p ${SOCKET_DIR} && chown dev:dev ${SOCKET_DIR}
+
+USER dev:dev
+
+COPY --chown=dev:dev entry.sh /entry.sh
+
+ENV SOCKET_DIR=${SOCKET_DIR}
 ENV SSH_AUTH_SOCK ${SOCKET_DIR}/ssh_auth_sock
 ENV SSH_AUTH_PROXY_SOCK ${SOCKET_DIR}/ssh_auth_proxy_sock
-
-# VOLUME ["${SOCKET_DIR}"]
 
 ENTRYPOINT ["/entry.sh"]
 

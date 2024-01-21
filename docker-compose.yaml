@@ -11,11 +11,17 @@ services:
     user: "${UID}:${GID}"
     networks:
       - dev-net
+    environment:
+      - SSH_AUTH_SOCK=/.ssh-agent/ssh_auth_sock
     volumes:
+      - ssh-agent:/.ssh-agent
       - .state/go-service:/project
     command:
       sleep infinity
 
+volumes:
+  ssh-agent:
+    external: true
+
 networks:
   dev-net:
-
